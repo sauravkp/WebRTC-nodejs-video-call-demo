@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+   
+  </head>
+
+  <body>
+    <div id="myName">
+      <input type="text" id="usernameInput" placeholder="My name">
+      <input type="button" id="loginBtn" value="Save"></input>
+    </div>
+    <div id="otherElements">
+      <!-- <h3 id="localuser"></h3> -->
+    <video id="localVideo" autoplay muted style="width:40%;"></video>
+    <video id="remoteVideo" autoplay style="width:40%;"></video>
+
+    <br />
+    <input id = "callToUsernameInput" 
+    type = "text" placeholder = "username to call" /> 
+    <br/>
+    <button id = "callBtn" class = "btn-success btn">Call</button> 
+    <button id = "hangUpBtn" class = "btn-danger btn">Hang Up</button> 
+    <!-- <input type="button" id="start" onclick="start(true)" value="Start Video"></input>
+    <input type="button" id="Stop" onclick="stop(true)" value="Stop Video"></input> -->
+
+  </div>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script src="webrtc.js"></script>
+    <script type="text/javascript">
+       document.getElementById('otherElements').hidden = true;
+    </script>
+    
+  </body>
+</html>
