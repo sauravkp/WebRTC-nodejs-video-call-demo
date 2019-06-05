@@ -7,25 +7,26 @@ const WebSocketServer = WebSocket.Server;
 
 // Yes, TLS is required
 const serverConfig = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem'),
+   key: fs.readFileSync('key.pem'),
+   cert: fs.readFileSync('cert.pem'),
 };
 
 //all connected to the server users 
 var users = {};
+var allUsers = [];
 // ----------------------------------------------------------------------------------------
 
 // Create a server for the client html page
 const handleRequest = function(request, response) {
   // Render the single client html file for any request the HTTP server receives
-  console.log('request received: ' + request.url);
+   console.log('request received: ' + request.url);
 
-  if(request.url === '/') {
-    response.writeHead(200, {'Content-Type': 'text/html'});
-    response.end(fs.readFileSync('client/index.html'));
+   if(request.url === '/') {
+      response.writeHead(200, {'Content-Type': 'text/html'});
+      response.end(fs.readFileSync('client/index.html'));
   } else if(request.url === '/webrtc.js') {
-    response.writeHead(200, {'Content-Type': 'application/javascript'});
-    response.end(fs.readFileSync('client/webrtc.js'));
+      response.writeHead(200, {'Content-Type': 'application/javascript'});
+      response.end(fs.readFileSync('client/webrtc.js'));
   }
 };
 
@@ -40,138 +41,140 @@ const wss = new WebSocketServer({server: httpsServer});
 
 
 wss.on('connection', function(ws) {
-  ws.on('message', function(message) {
+   ws.on('message', function(message) {
 
-    var data;
+      var data;
 		
     //accepting only JSON messages 
-    try { 
-       data = JSON.parse(message); 
-    } catch (e) { 
-       console.log("Invalid JSON"); 
-       data = {}; 
-    }
-    // Broadcast any received message to all clients
-   // console.log('received: %s', message);
-    console.log('received data:', data);
-     //switching type of the user message 
-     switch (data.type) { 
-      //when a user tries to login 
-      case "login": 
-         console.log("User logged", data.name); 
-     
-         console.log('if anyone is logged in with this username then refuse') 
-         if(users[data.name]) { 
-            sendTo(ws, { 
-               type: "login", 
-               success: false 
-            }); 
-         } else { 
-            console.log('save user connection on the server') 
-            users[data.name] = ws; 
-            ws.name = data.name;
-       
-            sendTo(ws, { 
-               type: "login", 
-               success: true 
-            }); 
-         } 
-     
-         break;
-     
-      case "offer": 
-         //for ex. UserA wants to call UserB 
-         console.log("Sending offer to: ", data.name); 
-     
-         //if UserB exists then send him offer details 
-         var conn = users[data.name]; 
-     
-         if(conn != null) { 
-            //setting that UserA connected with UserB 
-            ws.otherName = data.name; 
-       
-            sendTo(conn, { 
-               type: "offer", 
-               offer: data.offer, 
-               name: ws.name 
-            }); 
-         } 
-     
-         break;
-     
-      case "answer": 
-         console.log("Sending answer to: ", data.name); 
-         //for ex. UserB answers UserA 
-         var conn = users[data.name]; 
-     
-         if(conn != null) { 
-            ws.otherName = data.name; 
-            sendTo(conn, { 
-               type: "answer", 
-               answer: data.answer 
-            });
-         } 
-     
-         break;
-     
-      case "candidate": 
-         console.log("Sending candidate to:",data.name); 
-         var conn = users[data.name];  
-     
-         if(conn != null) { 
-            sendTo(conn, { 
-               type: "candidate", 
-               candidate: data.candidate 
-            }); 
-         } 
-     
-         break;
-     
-      case "leave": 
-         console.log("Disconnecting from", data.name); 
-         var conn = users[data.name]; 
-         conn.otherName = null; 
-     
-         //notify the other user so he can disconnect his peer connection 
-         if(conn != null) { 
-            sendTo(conn, { 
-               type: "leave" 
-            }); 
-         }  
-     
-         break;
-     
-      default: 
-         sendTo(ws, { 
-            type: "error", 
-            message: "Command not found: " + data.type 
-         });
-     
-         break; 
-   }  
-    //wss.broadcast(message);
-  });
-
-  ws.on("close", function() { 
-	
-    if(ws.name) { 
-       delete users[ws.name]; 
+      try { 
+         data = JSON.parse(message); 
+      } catch (e) { 
+         console.log("Invalid JSON"); 
+         data = {}; 
+      }
     
-       if(ws.otherName) { 
-          console.log("Disconnecting from ", ws.otherName); 
-          var conn = users[ws.otherName]; 
-          conn.otherName = null;  
+      console.log('received data:', data);
+     //switching type of the user message 
+      switch (data.type) { 
+      //when a user tries to login 
+         case "login": 
+            console.log("User logged", data.name); 
+     
+            console.log('if anyone is logged in with this username then refuse') 
+            if(users[data.name]) { 
+               sendTo(ws, { 
+                  type: "login", 
+                  success: false 
+               }); 
+            } else { 
+               console.log('save user connection on the server') 
+               users[data.name] = ws; 
+               allUsers.indexOf(data.name) === -1 ? allUsers.push(data.name) : console.log("This item already exists");
+               
+               //console.log('all available users',JSON.stringify(users))
+               ws.name = data.name;
+       
+               sendTo(ws, { 
+                  type: "login", 
+                  success: true, 
+                  allUsers:allUsers
+               }); 
+            } 
+     
+         break;
+     
+         case "offer": 
+            //for ex. UserA wants to call UserB 
+            console.log("Sending offer to: ", data.name); 
+     
+            //if UserB exists then send him offer details 
+            var conn = users[data.name]; 
+     
+            if(conn != null) { 
+               //setting that UserA connected with UserB 
+               ws.otherName = data.name; 
+       
+               sendTo(conn, { 
+                  type: "offer", 
+                  offer: data.offer, 
+                  name: ws.name 
+               }); 
+            } 
+     
+         break;
+     
+         case "answer": 
+            console.log("Sending answer to: ", data.name); 
+            //for ex. UserB answers UserA 
+            var conn = users[data.name]; 
       
-          if(conn != null) { 
-             sendTo(conn, { 
-                type: "leave" 
-            }); 
-          }  
-       } 
-    } 
- });  
+            if(conn != null) { 
+               ws.otherName = data.name; 
+               sendTo(conn, { 
+                  type: "answer", 
+                  answer: data.answer 
+               });
+            } 
+      
+         break;
+     
+         case "candidate": 
+            console.log("Sending candidate to:",data.name); 
+            var conn = users[data.name];  
+      
+            if(conn != null) { 
+               sendTo(conn, { 
+                  type: "candidate", 
+                  candidate: data.candidate 
+               }); 
+            } 
+      
+         break;
+     
+         case "leave": 
+            console.log("Disconnecting from", data.name); 
+            var conn = users[data.name]; 
+            conn.otherName = null; 
+      
+            //notify the other user so he can disconnect his peer connection 
+            if(conn != null) { 
+               sendTo(conn, { 
+                  type: "leave" 
+               }); 
+            }  
+      
+         break;
+     
+         default: 
+            sendTo(ws, { 
+               type: "error", 
+               message: "Command not found: " + data.type 
+            });
+      
+         break; 
+      }  
+    //wss.broadcast(message);
+   });
 
- ws.send("Hello world"); 
+   ws.on("close", function() { 
+      if(ws.name) { 
+         delete users[ws.name]; 
+    
+         if(ws.otherName) { 
+            console.log("Disconnecting from ", ws.otherName); 
+            var conn = users[ws.otherName]; 
+            conn.otherName = null;  
+         
+            if(conn != null) { 
+               sendTo(conn, { 
+                  type: "leave" 
+               }); 
+            }  
+         } 
+      } 
+   });  
+
+   ws.send("Hello world"); 
 });
 
 function sendTo(connection, message) { 
