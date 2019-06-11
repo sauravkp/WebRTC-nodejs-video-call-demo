@@ -1,4 +1,4 @@
-WebRTC signalling server example finished !!
+WebRTC signalling server example
 ==============
 
 ## Usage
