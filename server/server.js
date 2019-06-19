@@ -107,6 +107,7 @@ wss.on('connection', function(ws) {
             console.log("Sending answer to: ", data.name); 
             //for ex. UserB answers UserA 
             var conn = users[data.name]; 
+            console.log('answer: ',data.answer)
       
             if(conn != null) { 
                ws.otherName = data.name; 
@@ -174,7 +175,7 @@ wss.on('connection', function(ws) {
       } 
    });  
 
-   ws.send("Hello world"); 
+   //ws.send("Hello world"); 
 });
 
 function sendTo(connection, message) { 

@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-   
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
   </head>
 
   <body>
@@ -19,11 +25,23 @@
       <video id="remoteVideo" autoplay style="width:40%;"></video>
 
       <br />
-      <input id = "callToUsernameInput" 
-      type = "text" placeholder = "username to call" /> 
-      <br/>
-      <button id = "callBtn" class = "btn-success btn">Call</button> 
-      <button id = "hangUpBtn" class = "btn-danger btn">Hang Up</button> 
+      <div id='callInitiator'>
+          <input id = "callToUsernameInput" 
+          type = "text" placeholder = "username to call"/> 
+          <br/>
+          <button id = "callBtn" class = "btn-success btn">Call</button> 
+          <!-- <button id = "hangUpBtn" class = "btn-danger btn">Hang Up</button>  -->
+      </div>
+      <div id='callReceiver' style="display: none;">
+        
+        <button id = "answerBtn" class = "btn-success btn">Answer</button> 
+        <button id = "declineBtn" class = "btn-danger btn">Decline</button> 
+    </div>
+    <div id='callOngoing' style="display: none;">
+      
+      <button id = "hangUpBtn" class = "btn-danger btn">Hang Up</button>
+
+  </div>
       <!-- <input type="button" id="start" onclick="start(true)" value="Start Video"></input>
       <input type="button" id="Stop" onclick="stop(true)" value="Stop Video"></input> -->
 

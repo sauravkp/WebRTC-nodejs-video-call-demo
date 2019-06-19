@@ -2,10 +2,11 @@ var localVideo;
 var localStream;
 var myName;
 var remoteVideo;
-var peerConnection;
+var yourConn;
 var uuid;
 var serverConnection;
- 
+var connectionState;
+
 var name; 
 var connectedUser;
 
@@ -68,7 +69,7 @@ function handleLogin(success,allUsers) {
 
   var constraints = {
     video: true,
-    audio: true,
+    audio: true
   };
 
   /* START:The camera stream acquisition */
@@ -87,8 +88,12 @@ function getUserMediaSuccess(stream) {
   localStream = stream;
   localVideo.srcObject = stream;
   yourConn = new RTCPeerConnection(peerConnectionConfig);
-  
+
+  connectionState = yourConn.connectionState;
+  console.log('connection state inside getusermedia',connectionState)
+
   yourConn.onicecandidate = function (event) { 
+    console.log('onicecandidate inside getusermedia success', event.candidate)
     if (event.candidate) { 
        send({ 
           type: "candidate", 
@@ -112,6 +117,13 @@ callBtn.addEventListener("click", function () {
     connectedUser = callToUsername; 
     console.log('nameToCall',connectedUser);
     console.log('create an offer to-',connectedUser)
+
+    
+    var connectionState2 = yourConn.connectionState;
+    console.log('connection state before call beginning',connectionState2)
+    var signallingState2 = yourConn.signalingState;
+  //console.log('connection state after',connectionState1)
+  console.log('signalling state after',signallingState2)
     yourConn.createOffer(function (offer) { 
        send({
           type: "offer", 
@@ -120,8 +132,12 @@ callBtn.addEventListener("click", function () {
     
        yourConn.setLocalDescription(offer); 
     }, function (error) { 
-       alert("Error when creating an offer"); 
+       alert("Error when creating an offer",error); 
+       console.log("Error when creating an offer",error)
     }); 
+    document.getElementById('callOngoing').style.display = 'block';
+    document.getElementById('callInitiator').style.display = 'none';
+
   } 
   else 
     alert("username can't be blank!")
@@ -144,7 +160,7 @@ function gotMessageFromServer(message) {
       handleOffer(data.offer, data.name); 
     break; 
     case "answer": 
-      console.log('inside offer')
+      console.log('inside answer')
       handleAnswer(data.answer); 
     break; 
      //when a remote peer sends an ice candidate to us 
@@ -176,7 +192,12 @@ function send(msg) {
 
 /* START: Create an answer for an offer i.e. send message to server */
 function handleOffer(offer, name) { 
-  
+  document.getElementById('callInitiator').style.display = 'none';
+  document.getElementById('callReceiver').style.display = 'block';
+
+  /* Call answer functionality starts */
+  answerBtn.addEventListener("click", function () { 
+
   connectedUser = name; 
   yourConn.setRemoteDescription(new RTCSessionDescription(offer)); 
  
@@ -192,6 +213,18 @@ function handleOffer(offer, name) {
   }, function (error) { 
      alert("Error when creating an answer"); 
   }); 
+  document.getElementById('callReceiver').style.display = 'none';
+  document.getElementById('callOngoing').style.display = 'block';
+});
+/* Call answer functionality ends */
+/* Call decline functionality starts */
+declineBtn.addEventListener("click", function () {
+  document.getElementById('callInitiator').style.display = 'block';
+  document.getElementById('callReceiver').style.display = 'none';
+
+});
+
+/*Call decline functionality ends */
 };
 
 function gotRemoteStream(event) {
@@ -205,6 +238,7 @@ function errorHandler(error) {
 
 //when we got an answer from a remote user 
 function handleAnswer(answer) { 
+  console.log('answer: ', answer)
   yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
 };
 
@@ -220,14 +254,24 @@ hangUpBtn.addEventListener("click", function () {
   }); 
  
   handleLeave(); 
+
+  document.getElementById('callOngoing').style.display = 'none';
+  document.getElementById('callInitiator').style.display = 'block';
 });
 
 function handleLeave() { 
   connectedUser = null; 
   remoteVideo.src = null; 
- 
+  var connectionState = yourConn.connectionState;
+  var signallingState = yourConn.signalingState;
+  console.log('connection state before',connectionState)
+  console.log('signalling state before',signallingState)
   yourConn.close(); 
   yourConn.onicecandidate = null; 
   yourConn.onaddstream = null; 
+  var connectionState1 = yourConn.connectionState;
+  var signallingState1 = yourConn.signalingState;
+  console.log('connection state after',connectionState1)
+  console.log('signalling state after',signallingState1)
 };
 
