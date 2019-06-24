@@ -1,4 +1,4 @@
-WebRTC signalling server example
+WebRTC nodejs video call demo
 ==============
 
 ## Usage
