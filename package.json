@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shanet/WebRTC-Example.git"
+    "url": ""
   },
   "keywords": [
     "webrtc"
@@ -17,9 +17,9 @@
   "author": "Saurav Panda",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/quiph/WebRTC-signalling-server/issues"
+    "url": ""
   },
-  "homepage": "https://github.com/quiph/WebRTC-signalling-server#readme",
+  "homepage": "",
   "dependencies": {
     "bootstrap": "^4.3.1",
     "ws": "^3.3.2"
