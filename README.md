@@ -21,4 +21,4 @@ Recent versions of Chrome require secure websockets for WebRTC. Thus, this examp
 
 
 ## Update
-this is a demo version build some time ago for learning purposes only. A new production ready version of this application with a detailed documentation is now available in [this repo](https://github.com/sauravkp/cignal). Please take a look and feel free to build a real application with it if you find it useful.
+This is a demo version build some time ago for learning purposes only. A new production ready version of this application with a detailed documentation is now available in [this repo](https://github.com/sauravkp/cignal). Please take a look and feel free to build a real application with it if you find it useful.
