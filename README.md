@@ -20,3 +20,5 @@ With the server running, open a recent version of Firefox, Chrome, or Safari and
 Recent versions of Chrome require secure websockets for WebRTC. Thus, this example utilizes HTTPS. Included is a self-signed certificate that must be accepted in the browser for the example to work.
 
 
+## Update
+A new production ready version of this application with a detailed documentation is now available in [this repo](https://github.com/sauravkp/cignal). Please take a look and feel free to use it if you find it useful.
